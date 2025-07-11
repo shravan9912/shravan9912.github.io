@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hanuman Chalisa</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari&family=Noto+Sans+Telugu&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Noto Sans Devanagari', sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    #controls {
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    select {
+      font-size: 1rem;
+      padding: 4px;
+    }
+    .zoom-btn {
+      font-size: 1.2rem;
+      padding: 4px 10px;
+      cursor: pointer;
+    }
+    #chalisa {
+      margin-top: 20px;
+      white-space: normal;
+    }
+    @media (max-width: 600px) {
+      body { padding: 10px; }
+      #controls { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <h1>श्री हनुमान चालीसा | Hanuman Chalisa</h1>
+
+  <div id="controls">
+    <label for="language">Choose Language:</label>
+    <select id="language">
+      <optgroup label="Indian Languages">
+        <option value="sanskrit">Sanskrit</option>
+        <option value="hindi" selected>Hindi</option>
+        <option value="telugu">Telugu</option>
+      </optgroup>
+      <optgroup label="Other Languages">
+        <option value="english">English</option>
+      </optgroup>
+    </select>
+
+    <button class="zoom-btn" id="zoom-in">A+</button>
+    <button class="zoom-btn" id="zoom-out">A−</button>
+  </div>
+
+  <div id="chalisa"></div>
+
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+  <script>
+    let chalisaText = {};
+    let currentFontSize = 1.2; // initial rem for Chalisa text
+
+    const fonts = {
+      hindi: 'Noto Sans Devanagari',
+      sanskrit: 'Noto Sans Devanagari',
+      telugu: 'Noto Sans Telugu',
+      english: 'sans-serif'
+    };
+
+    function updateChalisa() {
+      const lang = $('#language').val();
+      $('#chalisa').html(chalisaText[lang] || "<p>Coming soon...</p>");
+      $('body').css('font-family', fonts[lang]);
+      $('#chalisa').css('font-size', currentFontSize + 'rem');
+    }
+
+    $.getJSON('chalisa.json', function(data) {
+      chalisaText = data;
+      updateChalisa();
+    });
+
+    $('#language').on('change', updateChalisa);
+
+    $('#zoom-in').on('click', function() {
+      currentFontSize += 0.1;
+      $('#chalisa').css('font-size', currentFontSize + 'rem');
+    });
+
+    $('#zoom-out').on('click', function() {
+      currentFontSize = Math.max(0.6, currentFontSize - 0.1); // prevent too small
+      $('#chalisa').css('font-size', currentFontSize + 'rem');
+    });
+  </script>
+</body>
+</html>
